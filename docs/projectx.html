@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ProjectX — the picture</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { --ink:#1b1f24; --muted:#6b7280; --line:#d1d5db; --bg:#fafafa;
+          --dsh:#e0ecff; --dshb:#3b6fd6; --ours:#e3f7e8; --oursb:#2e9e4f;
+          --ext:#fff1d6; --extb:#d98a00; --warn:#fde2e2; --warnb:#c93c3c; }
+  body { font: 16px/1.5 -apple-system, system-ui, sans-serif; color:var(--ink); background:var(--bg); margin:0; }
+  main { max-width: 960px; margin: 0 auto; padding: 32px 20px 80px; }
+  h1 { font-size: 28px; margin: 0 0 4px; }
+  h2 { font-size: 20px; margin: 48px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); }
+  p.lead { color: var(--muted); margin-top: 0; }
+  .legend { display:flex; gap:14px; flex-wrap:wrap; font-size:14px; margin: 12px 0 20px; }
+  .legend span { padding: 3px 10px; border-radius: 6px; border:1px solid; }
+  .dsh  { background:var(--dsh);  border-color:var(--dshb); }
+  .ours { background:var(--ours); border-color:var(--oursb); }
+  .ext  { background:var(--ext);  border-color:var(--extb); }
+  .warn { background:var(--warn); border-color:var(--warnb); }
+  .stack { display:grid; gap:10px; }
+  .layer { border:1px solid; border-radius:10px; padding:12px 16px; }
+  .layer b { display:block; font-size:14px; letter-spacing:.02em; text-transform:uppercase; opacity:.75; margin-bottom:6px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; }
+  .box { border:1px solid; border-radius:8px; padding:8px 12px; background:#fff; min-width:120px; }
+  .box small { display:block; color:var(--muted); font-size:12px; }
+  .arrow { text-align:center; color:var(--muted); font-size:22px; line-height:1; margin:-2px 0; }
+  table { border-collapse: collapse; width:100%; font-size:15px; }
+  th, td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--line); }
+  th { font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; }
+  .opt { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; }
+  .opt .card { border:1px solid var(--line); border-radius:10px; padding:14px; background:#fff; }
+  .opt .card.rec { border-color: var(--oursb); box-shadow: 0 0 0 3px var(--ours); }
+  .card h3 { margin:0 0 6px; font-size:16px; }
+  .card .tag { font-size:12px; color:var(--oursb); font-weight:600; }
+  .pill { display:inline-block; font-size:12px; padding:1px 8px; border-radius:999px; border:1px solid var(--line); background:#fff; margin-right:4px; }
+  .q { background:#fff; border:1px solid var(--line); border-left:4px solid var(--oursb); padding:12px 16px; border-radius:8px; margin-top:12px; }
+  @media (max-width:700px){ .opt{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<main>
+
+<h1>ProjectX — the picture</h1>
+<p class="lead">One page. What exists, what we build, what we borrow. Updated 2026-11-04.</p>
+
+<div class="legend">
+  <span class="dsh">Blue = DeepSeek Harness gives us this (free)</span>
+  <span class="ours">Green = we build this</span>
+  <span class="ext">Orange = outside services / bots</span>
+</div>
+
+<!-- ===================================================== -->
+<h2>1. The stack — what sits on what</h2>
+
+<div class="stack">
+
+  <div class="layer ext">
+    <b>You</b>
+    <div class="row">
+      <div class="box">Browser tab on the Mac<small>only a client</small></div>
+      <div class="box">Phone<small>same URL, later</small></div>
+    </div>
+  </div>
+  <div class="arrow">↓ tailscale https ↓</div>
+
+  <div class="layer ours">
+    <b>Screens — our UI, owns the whole page</b>
+    <div class="row">
+      <div class="box">Home<small>Captain chat + digest</small></div>
+      <div class="box">Crew<small>the bots</small></div>
+      <div class="box">Issues<small>FL-12, QB-3 …</small></div>
+      <div class="box">Routines<small>when → do</small></div>
+      <div class="box">Inbox<small>needs you</small></div>
+    </div>
+    <small>How: DSH's own layout is just a plugin in a slot called <code>root</code>. We put ours in the same slot at higher priority. Verified in code, no fork.</small>
+  </div>
+  <div class="arrow">↓</div>
+
+  <div class="layer ours">
+    <b>Company layer — our brain + memory (projectx-host)</b>
+    <div class="row">
+      <div class="box">Captain<small>persona + tools</small></div>
+      <div class="box">Issues store<small>one file per issue</small></div>
+      <div class="box">Inbox store<small>bug / task / question / result / decision</small></div>
+      <div class="box">Routines<small>thin layer over DSH clock</small></div>
+      <div class="box">Bot providers<small>one interface: send · wait · tail · interrupt</small></div>
+    </div>
+    <small>We <em>lift</em> ~5 hard files from dsh-superagent-prototype (worker launch, wake-up, durable queue). We <em>copy the shape</em> of Paperclip's data model.</small>
+  </div>
+  <div class="arrow">↓</div>
+
+  <div class="layer dsh">
+    <b>Engine — DeepSeek Harness (plugins only, never a fork)</b>
+    <div class="row">
+      <div class="box">Chat + sessions</div>
+      <div class="box">Streaming to browser</div>
+      <div class="box">Login / remote access</div>
+      <div class="box">Scheduler<small>cron, daily, weekly</small></div>
+      <div class="box">Subagents<small>spawn, fork, provider slot</small></div>
+      <div class="box">Storage</div>
+      <div class="box">Plugin loader</div>
+    </div>
+  </div>
+  <div class="arrow">↓ runs on oscar-dev-server-leader (Linux) ↓</div>
+
+  <div class="layer ext">
+    <b>Bots that do real work (the crew)</b>
+    <div class="row">
+      <div class="box">FillLight Bot<small>Grok Bot · via <code>grokbot</code> CLI · has PostHog, RevenueCat, Postiz, X</small></div>
+      <div class="box">Researcher<small>DSH session · web search · cheap</small></div>
+      <div class="box">Coder<small>Claude Code via ACP · later</small></div>
+      <div class="box">OpenBot<small>later, when it has a CLI</small></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===================================================== -->
+<h2>2. What the research found — one line each</h2>
+
+<table>
+<tr><th>Project</th><th>What it is</th><th>What we do with it</th></tr>
+<tr><td><b>DeepSeek Harness</b></td><td>The engine. Everything is a plugin.</td><td><span class="pill">BASE ON</span> decided</td></tr>
+<tr><td><b>dsh-superagent-prototype</b></td><td>DeepSeek's own Router/Worker as DSH plugins. Coding bot for one GitHub repo. 30k lines, "research, not production".</td><td><span class="pill">LIFT 5 FILES</span> the hard plumbing, not the whole thing</td></tr>
+<tr><td><b>Paperclip</b></td><td>"Run an AI company" — agents, issues, routines, approvals, inbox, goals. Own engine (Postgres).</td><td><span class="pill">COPY DESIGN</span> data model + page list</td></tr>
+<tr><td><b>Backlog.md</b></td><td>One markdown file per issue, in git.</td><td><span class="pill">COPY FORMAT</span> for the Issues store</td></tr>
+<tr><td><b>Grok Bot</b></td><td>Your cloud bots with connectors. Has a CLI.</td><td><span class="pill">USE NOW</span> first bot provider</td></tr>
+<tr><td><b>OpenBot</b></td><td>Open-source Grok Bot cousin. No CLI/API token yet, beta churn.</td><td><span class="pill">LATER</span></td></tr>
+<tr><td>CrewAI, Mastra, Letta…</td><td>Agent frameworks</td><td><span class="pill">NO</span> second engine = the LilOS mistake</td></tr>
+<tr><td>Plane, Huly, Vibe Kanban</td><td>Board UIs</td><td><span class="pill">LOOK AT</span> screenshots only</td></tr>
+</table>
+
+<!-- ===================================================== -->
+<h2>3. The one question open right now</h2>
+<p>The prototype is a DSH plugin and already has the plumbing. <b>Do we start from it, or start clean and borrow from it?</b></p>
+
+<div class="opt">
+  <div class="card">
+    <h3>A. Fork the prototype</h3>
+    <p>Copy all 30k lines. Rip out GitHub/Feishu. Rename Ticket→Issue, Executor→Bot everywhere. Replace its panel with our screens.</p>
+    <p><b>Day 2:</b> something runs — but it's their coding bot.<br><b>Week 6:</b> still renaming and untangling.</p>
+  </div>
+  <div class="card rec">
+    <div class="tag">RECOMMENDED</div>
+    <h3>B. Start clean, lift the hard parts</h3>
+    <p>Our packages, our 5 words from line 1. Copy ~5 files (worker launch, wake-up, durable queue, presets, slot registration) with credit.</p>
+    <p><b>Week 1:</b> nothing to click yet.<br><b>Week 2:</b> Captain + Issues board running, ours.<br>Every week after: faster.</p>
+  </div>
+  <div class="card">
+    <h3>C. Use it as-is + new UI</h3>
+    <p>Doesn't work. Its work only comes from GitHub, and only a DSH coding session can do it. No Grok Bot, no routines, no chat.</p>
+  </div>
+</div>
+
+<div class="q">
+  <b>Suggested first move either way:</b> install DSH on the leader and run the prototype once, so we see its panel and worker flow with our own eyes (1 hour). Then pick A or B with evidence.
+</div>
+
+<!-- ===================================================== -->
+<h2>4. Decisions so far</h2>
+<table>
+<tr><th>#</th><th>Decision</th><th>Choice</th></tr>
+<tr><td>1</td><td>Engine</td><td>DeepSeek Harness, plugins only, no fork</td></tr>
+<tr><td>2</td><td>Bots with real tools</td><td>Grok Bot now via CLI; OpenBot later; one provider interface</td></tr>
+<tr><td>3</td><td>First product</td><td>FillLight, dark marketing</td></tr>
+<tr><td>4</td><td>Where it runs</td><td>Linux server (leader for dev); Mac and phone are browsers only</td></tr>
+<tr><td>5</td><td>UI</td><td>Fully custom, owns the whole page via the <code>root</code> slot</td></tr>
+<tr><td>6</td><td>Docs</td><td>This one HTML file + AGENTS.md. Research notes archived under <code>docs/research/</code></td></tr>
+<tr><td>7</td><td>Captain</td><td>Orchestrator that may also do small work itself; spills big work to bots</td></tr>
+<tr><td>8</td><td>Issues</td><td>Keys per product: FL-, QB-, QS-, HB-…</td></tr>
+<tr><td>9</td><td>Inbox</td><td>Typed like Grok Bot: bug · task · question · result · decision</td></tr>
+<tr><td>10</td><td>Human approval always</td><td>spend money · publish · change price · merge</td></tr>
+<tr><td>11</td><td>Secrets</td><td>Never in files, commits or chat. Keychain / DSH credential store.</td></tr>
+<tr><td>12</td><td>Definition of done</td><td>v1: one tab runs FillLight's marketing loop, you only touch Inbox. v2: it replaces the DSH desktop app as your daily workplace.</td></tr>
+<tr><td>—</td><td><i>Open</i></td><td>Fork prototype (A) or start clean (B)?</td></tr>
+</table>
+
+</main>
+</body>
+</html>
