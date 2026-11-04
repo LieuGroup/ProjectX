@@ -111,7 +111,6 @@
       <div class="box">FillLight Bot<small>Grok Bot · via <code>grokbot</code> CLI · has PostHog, RevenueCat, Postiz, X</small></div>
       <div class="box">Researcher<small>DSH session · web search · cheap</small></div>
       <div class="box">Coder<small>Claude Code via ACP · later</small></div>
-      <div class="box">OpenBot<small>later, when it has a CLI</small></div>
     </div>
   </div>
 
@@ -127,7 +126,7 @@
 <tr><td><b>Paperclip</b></td><td>"Run an AI company" — agents, issues, routines, approvals, inbox, goals. Own engine (Postgres).</td><td><span class="pill">COPY DESIGN</span> data model + page list</td></tr>
 <tr><td><b>Backlog.md</b></td><td>One markdown file per issue, in git.</td><td><span class="pill">COPY FORMAT</span> for the Issues store</td></tr>
 <tr><td><b>Grok Bot</b></td><td>Your cloud bots with connectors. Has a CLI.</td><td><span class="pill">USE NOW</span> first bot provider</td></tr>
-<tr><td><b>OpenBot</b></td><td>Open-source Grok Bot cousin. No CLI/API token yet, beta churn.</td><td><span class="pill">LATER</span></td></tr>
+<tr><td><b>OpenBot</b> (nightly-labs)</td><td>Remote desktop/web/phone window onto ACP agents. Already on the leader, wired to DSH. Noncommercial licence.</td><td><span class="pill">NOT A BASE</span> it only solves "DSH has no remote access". Handy to chat with the leader's DSH meanwhile; not part of the product.</td></tr>
 <tr><td>CrewAI, Mastra, Letta…</td><td>Agent frameworks</td><td><span class="pill">NO</span> second engine = the LilOS mistake</td></tr>
 <tr><td>Plane, Huly, Vibe Kanban</td><td>Board UIs</td><td><span class="pill">LOOK AT</span> screenshots only</td></tr>
 </table>
@@ -163,7 +162,7 @@
 <table>
 <tr><th>#</th><th>Decision</th><th>Choice</th></tr>
 <tr><td>1</td><td>Engine</td><td>DeepSeek Harness, plugins only, no fork</td></tr>
-<tr><td>2</td><td>Bots with real tools</td><td>Grok Bot now via CLI; OpenBot later; one provider interface</td></tr>
+<tr><td>2</td><td>Bots with real tools</td><td>Grok Bot now via CLI; one provider interface so others (Claude Code via ACP, …) plug in later</td></tr>
 <tr><td>3</td><td>First product</td><td>FillLight, dark marketing</td></tr>
 <tr><td>4</td><td>Where it runs</td><td>Linux server (leader for dev); Mac and phone are browsers only</td></tr>
 <tr><td>5</td><td>UI</td><td>Fully custom, owns the whole page via the <code>root</code> slot</td></tr>
@@ -174,6 +173,7 @@
 <tr><td>10</td><td>Human approval always</td><td>spend money · publish · change price · merge</td></tr>
 <tr><td>11</td><td>Secrets</td><td>Never in files, commits or chat. Keychain / DSH credential store.</td></tr>
 <tr><td>12</td><td>Definition of done</td><td>v1: one tab runs FillLight's marketing loop, you only touch Inbox. v2: it replaces the DSH desktop app as your daily workplace.</td></tr>
+<tr><td>13</td><td>OpenBot</td><td>Not a base, not a bot provider. A remote window onto DSH on the leader — useful while our UI doesn't exist, nothing more. ProjectX is its own product.</td></tr>
 <tr><td>—</td><td><i>Open</i></td><td>Fork prototype (A) or start clean (B)?</td></tr>
 </table>
 

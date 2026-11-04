@@ -1,5 +1,17 @@
 # OpenBot (CopilotKit) as a second bot provider
 
+> **Correction 2026-11-04 (evening):** this note studied the WRONG OpenBot.
+> The one Oscar runs on `oscar-dev-server-leader` is **nightly-labs/openbot**
+> (v0.60, PolyForm Noncommercial, Synthetify Labs), not CopilotKit/openbot.
+> nightly-labs/openbot is a local-first desktop/web/phone workspace for
+> persistent agents whose brains are ACP agents; on the leader it is wired to
+> `dsh --profile acp` through `~/.local/bin/dsh-cpa-acp`, so every OpenBot
+> agent there is a DSH session. Oscar's verdict: OpenBot only solves "DSH has
+> no remote access"; it is a remote window onto DSH, **not** a base for
+> ProjectX and not a product direction. Decision #2 ("OpenBot later as a bot
+> provider") is therefore dropped; see decisions in `docs/projectx.html`.
+> The rest of this file is kept for the record only.
+
 Date: 2026-11-04. Source: clone of https://github.com/CopilotKit/openbot at commit `f3dfc9b` (2026-11-03), README, `docs/`, `server/src`. Read-only; nothing was run.
 
 ## 1. What it is
