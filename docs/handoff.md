@@ -2,6 +2,11 @@
 
 _Last updated: 2026-11-04 by the founding session (DSH, default-workspace)._
 
+Founding session, for reference (full conversation history):
+`session-d44774f0-ccb3-463c-8d2f-995cd1926069`, stored under
+`~/.dsh/sessions/--Users-a1241968-Documents-deepseek-harness-default-workspace--/`.
+Resume it in the DSH GUI from the session list if the docs are not enough.
+
 ## Where we are
 
 - Day 0. Research finished, decisions made, repo created. **No code yet.**
