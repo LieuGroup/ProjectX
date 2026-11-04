@@ -43,7 +43,7 @@
 <main>
 
 <h1>ProjectX — the picture</h1>
-<p class="lead">One page. What exists, what we build, what we borrow. Updated 2026-11-04.</p>
+<p class="lead">The memory of this project. Sections: 1 picture · 2 research · 3 decisions · 4 plan · 5 kickoff brief · 6 status/handoff · 7 research index. Updated 2026-11-04.</p>
 
 <div class="legend">
   <span class="dsh">Blue = DeepSeek Harness gives us this (free)</span>
@@ -87,7 +87,7 @@
       <div class="box">Routines<small>thin layer over DSH clock</small></div>
       <div class="box">Bot providers<small>one interface: send · wait · tail · interrupt</small></div>
     </div>
-    <small>We <em>lift</em> ~5 hard files from dsh-superagent-prototype (worker launch, wake-up, durable queue). We <em>copy the shape</em> of Paperclip's data model.</small>
+    <small>We <em>lift</em> ~5 hard files from dsh-superagent-prototype (worker launch, wake-up, durable queue). We <em>copy the shape</em> of Paperclip's data model. Issues are markdown files; the rest is DSH storage.</small>
   </div>
   <div class="arrow">↓</div>
 
@@ -132,50 +132,136 @@
 </table>
 
 <!-- ===================================================== -->
-<h2>3. The one question open right now</h2>
-<p>The prototype is a DSH plugin and already has the plumbing. <b>Do we start from it, or start clean and borrow from it?</b></p>
-
-<div class="opt">
-  <div class="card">
-    <h3>A. Fork the prototype</h3>
-    <p>Copy all 30k lines. Rip out GitHub/Feishu. Rename Ticket→Issue, Executor→Bot everywhere. Replace its panel with our screens.</p>
-    <p><b>Day 2:</b> something runs — but it's their coding bot.<br><b>Week 6:</b> still renaming and untangling.</p>
-  </div>
-  <div class="card rec">
-    <div class="tag">RECOMMENDED</div>
-    <h3>B. Start clean, lift the hard parts</h3>
-    <p>Our packages, our 5 words from line 1. Copy ~5 files (worker launch, wake-up, durable queue, presets, slot registration) with credit.</p>
-    <p><b>Week 1:</b> nothing to click yet.<br><b>Week 2:</b> Captain + Issues board running, ours.<br>Every week after: faster.</p>
-  </div>
-  <div class="card">
-    <h3>C. Use it as-is + new UI</h3>
-    <p>Doesn't work. Its work only comes from GitHub, and only a DSH coding session can do it. No Grok Bot, no routines, no chat.</p>
-  </div>
-</div>
-
-<div class="q">
-  <b>Suggested first move either way:</b> install DSH on the leader and run the prototype once, so we see its panel and worker flow with our own eyes (1 hour). Then pick A or B with evidence.
-</div>
+<h2>3. Decisions</h2>
+<p class="lead">Add a row when a decision is made. Never delete rows; strike and add a new one.</p>
+<table>
+<tr><th>#</th><th>Decision</th><th>Choice</th><th>Why</th></tr>
+<tr><td>1</td><td>Engine</td><td>DeepSeek Harness (DSH), plugins only, <b>never a fork</b>. Keep an engine boundary so other engines can plug in later.</td><td>MIT; everything-is-a-plugin; local plugins load into the official app</td></tr>
+<tr><td>2</td><td>Bots with real tools</td><td>Grok Bot now via the <code>grokbot</code> CLI; one provider interface (send · wait · tail · interrupt) so others (Claude Code via ACP, …) plug in later</td><td>Oscar's data already flows through Grok Bot (PostHog, RevenueCat, Postiz, X). Grok Bot $100 tier is enough.</td></tr>
+<tr><td>3</td><td>First product</td><td>FillLight, dark marketing (ASO, Apple Ads, TikTok). Don't spread to other products until the loop works for one.</td><td>It makes money now</td></tr>
+<tr><td>4</td><td>Where it runs</td><td>Linux server — <code>oscar-dev-server-leader</code> for dev, <code>oscar-dev-server</code> later. Mac and phone are browsers only. The repo lives on the leader.</td><td>Like Cursor / Devin / Claude: works from any machine</td></tr>
+<tr><td>5</td><td>UI</td><td>Fully custom, owns the whole page by registering our own occupant in DSH's <code>root</code> slot at a higher priority (verified in code; re-verify per DSH upgrade)</td><td>Oscar wants his own product, not DSH panels</td></tr>
+<tr><td>6</td><td>Docs</td><td>This one HTML file + <code>AGENTS.md</code>. Research notes archived under <code>docs/research/</code>, never rewritten. No other .md files.</td><td>One place agents can't get confused by; Oscar can visualise</td></tr>
+<tr><td>7</td><td>Captain</td><td>Orchestrator that may also do small work itself (inline); spills big work to bots</td><td>DSH's "inline &amp; spill" idea</td></tr>
+<tr><td>8</td><td>Issues</td><td>Keys per product: PX- (this project), FL-, QB-, QS-, HB-…</td><td>Like Capy / Linear</td></tr>
+<tr><td>9</td><td>Inbox</td><td>Typed like Grok Bot: bug · task · question · result · decision</td><td>Copy what works</td></tr>
+<tr><td>10</td><td>Human approval always</td><td>spend money · publish publicly · change price · merge code</td><td>Safety</td></tr>
+<tr><td>11</td><td>Secrets</td><td>Never in files, commits or chat. Keychain / DSH credential store. If one is pasted in chat, tell Oscar to rotate it.</td><td>Has happened before</td></tr>
+<tr><td>12</td><td>Definition of done</td><td><b>v1:</b> one browser tab runs FillLight's marketing loop, Oscar only touches Inbox. <b>v2:</b> it replaces the DSH desktop app as the daily workplace.</td><td>v1 gives a win in weeks; v2 is the north star</td></tr>
+<tr><td>13</td><td>OpenBot (nightly-labs)</td><td>Not a base, not a bot provider. A remote window onto DSH on the leader — used to talk to the leader's DSH while our UI doesn't exist, nothing more.</td><td>It only solves "DSH has no remote access"</td></tr>
+<tr><td>14</td><td>Prototype vs clean start</td><td><b>Start clean</b> with our own packages and our 5 words; lift ~5 hard files from dsh-superagent-prototype (worker launch, wake-up, durable queue, presets, slot registration) with credit</td><td>Fork = weeks of renaming their 8-concept model; it's unpublished research code</td></tr>
+<tr><td>15</td><td>Issues store</td><td>One markdown file per issue, git-tracked (Backlog.md style). Structured records (bots, routines, inbox) in DSH <code>ctx.storage</code>.</td><td>Oscar can read the Captain's brain in any editor; survives a DSH reset</td></tr>
+<tr><td>16</td><td>Bot lifecycle</td><td>We own it in <code>projectx-host</code> (Thread ↔ job table, send/wait/tail/interrupt). DSH's one-shot subagent slot is for cheap in-house helpers only.</td><td>Grok Bot bots are conversational; DSH's slot is one-shot</td></tr>
+<tr><td>17</td><td>Not continuing</td><td>LilOS / Nuncio</td><td>Built engine + product at once; too slow</td></tr>
+<tr><td>18</td><td>Licence</td><td>MIT, public on GitHub under LieuGroup. Write everything as if already public.</td><td>—</td></tr>
+</table>
 
 <!-- ===================================================== -->
-<h2>4. Decisions so far</h2>
+<h2>4. The plan — v1</h2>
+
+<h3>Packages (one repo)</h3>
+<pre style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px;font-size:14px">
+ProjectX/
+  AGENTS.md              entry point for any agent: "open docs/projectx.html"
+  docs/projectx.html     this file
+  docs/research/         archived notes (read, don't redo)
+  issues/                one markdown file per issue (PX-1.md …)
+  captain/               Captain's own files: AGENTS.md (rules) · CREW.md (rules every bot reads) · NOTES.md (plan) · DIGEST.md
+  packages/
+    projectx-profile/    bundle: cordis.patch.yml that turns the others on, Captain persona, default model
+    projectx-host/       brain + memory: storage, Captain tools, bot providers, projection for the UI
+    projectx-client/     the five screens, registered into the root slot
+</pre>
+
+<h3>Captain tools (what the model can call)</h3>
 <table>
-<tr><th>#</th><th>Decision</th><th>Choice</th></tr>
-<tr><td>1</td><td>Engine</td><td>DeepSeek Harness, plugins only, no fork</td></tr>
-<tr><td>2</td><td>Bots with real tools</td><td>Grok Bot now via CLI; one provider interface so others (Claude Code via ACP, …) plug in later</td></tr>
-<tr><td>3</td><td>First product</td><td>FillLight, dark marketing</td></tr>
-<tr><td>4</td><td>Where it runs</td><td>Linux server (leader for dev); Mac and phone are browsers only</td></tr>
-<tr><td>5</td><td>UI</td><td>Fully custom, owns the whole page via the <code>root</code> slot</td></tr>
-<tr><td>6</td><td>Docs</td><td>This one HTML file + AGENTS.md. Research notes archived under <code>docs/research/</code></td></tr>
-<tr><td>7</td><td>Captain</td><td>Orchestrator that may also do small work itself; spills big work to bots</td></tr>
-<tr><td>8</td><td>Issues</td><td>Keys per product: FL-, QB-, QS-, HB-…</td></tr>
-<tr><td>9</td><td>Inbox</td><td>Typed like Grok Bot: bug · task · question · result · decision</td></tr>
-<tr><td>10</td><td>Human approval always</td><td>spend money · publish · change price · merge</td></tr>
-<tr><td>11</td><td>Secrets</td><td>Never in files, commits or chat. Keychain / DSH credential store.</td></tr>
-<tr><td>12</td><td>Definition of done</td><td>v1: one tab runs FillLight's marketing loop, you only touch Inbox. v2: it replaces the DSH desktop app as your daily workplace.</td></tr>
-<tr><td>13</td><td>OpenBot</td><td>Not a base, not a bot provider. A remote window onto DSH on the leader — useful while our UI doesn't exist, nothing more. ProjectX is its own product.</td></tr>
-<tr><td>—</td><td><i>Open</i></td><td>Fork prototype (A) or start clean (B)?</td></tr>
+<tr><th>Tool</th><th>Does</th></tr>
+<tr><td><code>issue_create / issue_list / issue_update</code></td><td>Board. Key, title, status (open → working → needs-you → done), owner bot, blocked-by</td></tr>
+<tr><td><code>bot_list / bot_send / bot_wait / bot_tail / bot_interrupt</code></td><td>Hand an issue to a bot, follow it, stop it</td></tr>
+<tr><td><code>inbox_post</code></td><td>Put a typed item on Oscar's desk (bug · task · question · result · decision)</td></tr>
+<tr><td><code>digest_update</code></td><td>Rewrite DIGEST.md: Needs you / New / In progress</td></tr>
+<tr><td><code>approval_request</code></td><td>Gate for money / publish / price / merge. Blocks until Oscar answers in Inbox.</td></tr>
+<tr><td>DSH <code>schedule_*</code></td><td>Routines. We only add a nicer list on top.</td></tr>
 </table>
+
+<h3>Build order — every step is something to click</h3>
+<ol>
+  <li><b>Kickoff on the leader</b> (see §5). Repo cloned, DSH profile <code>projectx</code> exists, empty plugin loads, Captain answers "hello" in OpenBot.</li>
+  <li><b>Issues.</b> <code>issue_*</code> tools + markdown store. Captain opens <code>PX-1</code> and it appears as a file.</li>
+  <li><b>Inbox.</b> <code>inbox_post</code> + <code>approval_request</code>. Captain can ask a question without burying it in chat.</li>
+  <li><b>Screens.</b> <code>projectx-client</code> takes the <code>root</code> slot: Home · Crew · Issues · Routines · Inbox. Served by <code>dsh --profile projectx web</code> behind Tailscale. From here Oscar uses the browser tab, not OpenBot.</li>
+  <li><b>Grok Bot provider.</b> <code>bot_send</code> hands an issue to FillLight Bot; result comes back; Captain is woken.</li>
+  <li><b>First routine.</b> Weekly X scout for ASO / Apple Ads / TikTok tactics → digest in Inbox. <b>This is v1 done.</b></li>
+</ol>
+
+<h3>v1 routines for FillLight (after step 6)</h3>
+<ol>
+  <li>Weekly scout — X search for indie-dev ASO / Apple Ads / TikTok tactics; 1-page digest.</li>
+  <li>Daily numbers — installs + revenue via Grok Bot connectors; flag drops; auto-open a "fix" issue.</li>
+  <li>Creative pipeline — hooks → script → Postiz draft → approval → publish.</li>
+  <li>Store watch — App Store Connect status, rejections, reviews → issues.</li>
+</ol>
+
+<h3>Not in v1</h3>
+<p>More than one product · OpenBot as a provider · Stripe · replacing DSH's sidebar for other sessions · mobile-specific UI (the web UI should just work on a phone).</p>
+
+<!-- ===================================================== -->
+<h2>5. Kickoff brief — for the agent on the leader</h2>
+<p class="lead">Oscar talks to a DSH agent on <code>oscar-dev-server-leader</code> through OpenBot. That agent reads this section and does the steps. Read-only first; ask before anything that installs, deletes, or costs money.</p>
+
+<div class="q">
+<b>Facts you can rely on (checked 2026-11-04):</b> user <code>oscar</code>; Ubuntu x86_64, 12 cores, 15 GB RAM; Node 22.23; git; <code>dsh 0.2.1-rc.5</code> at <code>/usr/bin/dsh</code> with only the <code>acp</code> profile; <b>no pnpm</b>; OpenBot 0.60 as a systemd service, with one custom ACP agent "DSH CPA" → <code>~/.local/bin/dsh-cpa-acp</code> → <code>dsh --profile acp</code> using provider <code>cliproxyapi-dev-server</code>; Tailscale serve already proxies <code>/</code> → 127.0.0.1:9119 (hermes) — do not change it. Also running: Capy, Hermes, T3, cloudflared, QuickBook360 dev. The Mac is not used for anything.
+</div>
+
+<ol>
+  <li><b>Clone.</b> <code>git clone https://github.com/LieuGroup/ProjectX ~/src/ProjectX</code>. Open <code>docs/projectx.html</code> (read it as text; it's the memory). Confirm the DSH version satisfies what we'll pin later.</li>
+  <li><b>Install pnpm</b> (ask first): <code>npm i -g pnpm</code>. Nothing else global.</li>
+  <li><b>Profile.</b> Create <code>~/.dsh/profiles/projectx</code> from the web template: <code>dsh projectx --from-default-profile web --dump-config &gt; /dev/null</code> (same trick dsh-superagent-prototype uses; verify the command with <code>dsh --help</code> first). Copy the <code>cliproxyapi-dev-server</code> model config from the <code>acp</code> profile's patch into it. <b>Never</b> print or commit the API key env value.</li>
+  <li><b>Empty bundle.</b> Create <code>packages/projectx-profile</code> with a <code>package.json</code> (<code>dsh.bundle.patch</code>) and a <code>cordis.patch.yml</code> that only sets the Captain's system prompt: "You are the Captain of ProjectX…" (use the words in §3). Model <code>@deepseek-ai/dsh-experimental-agent-team-profile</code>'s layout. Install with <code>dsh plugin --profile projectx add "link:$HOME/src/ProjectX/packages/projectx-profile"</code>.</li>
+  <li><b>OpenBot agent.</b> Add a second custom ACP agent in OpenBot named <b>ProjectX Captain</b>: a copy of <code>dsh-cpa-acp</code> that runs <code>dsh --profile projectx</code> instead of <code>acp</code> (the ACP server comes from dsh-base, so the profile must include it — check <code>dsh --profile projectx --help</code>). Oscar then talks to the Captain from his phone.</li>
+  <li><b>Issues.</b> Create <code>issues/PX-1.md</code> by hand ("Kickoff on the leader", status: done) so the format exists: YAML front-matter <code>key, title, status, owner, product, created, blocked_by</code>, then markdown body with Acceptance criteria. Then build the <code>issue_*</code> tools (build-order step 2) in <code>packages/projectx-host</code>.</li>
+  <li><b>Commit often</b>, push to <code>LieuGroup/ProjectX</code>, and update §6 of this file at the end of every session.</li>
+</ol>
+
+<!-- ===================================================== -->
+<h2>6. Status / handoff</h2>
+<p class="lead">Update at the end of every session. Newest first.</p>
+
+<h3>2026-11-04 evening — founding sessions on the Mac (DSH desktop)</h3>
+<ul>
+  <li>Done: research (6 + 4 notes under <code>docs/research/</code>), decisions 1–18, this file, repo pushed to <code>LieuGroup/ProjectX</code>.</li>
+  <li><b>No code yet.</b> Next: §5 Kickoff on the leader, driven from OpenBot.</li>
+  <li>The Mac folder <code>~/Desktop/Oscar/ProjectX</code> is now just a clone; the leader is the home. (The <code>Projectx</code>/<code>projectx</code> folders on the Mac are the same folder — case-insensitive filesystem — not leftovers.)</li>
+  <li>Founding conversation, if the docs are not enough: DSH desktop session <code>session-d44774f0-ccb3-463c-8d2f-995cd1926069</code> under <code>~/.dsh/sessions/--Users-a1241968-Documents-deepseek-harness-default-workspace--/</code> on the Mac, plus the follow-up session rooted in this folder.</li>
+</ul>
+
+<h3>Open items that need Oscar</h3>
+<ul>
+  <li>Stripe read access (run <code>stripe</code> outside the sandbox, or a read-only key).</li>
+  <li>App Store Connect vendor number (sales/downloads via <code>asc</code>).</li>
+  <li>Rotate the X bearer token that was once pasted into chat. App-level token is enough for search.</li>
+  <li>Model API key env on the leader for the <code>projectx</code> profile (already exists for <code>acp</code>; reuse, don't paste).</li>
+</ul>
+
+<h3>Tools on hand</h3>
+<p>Mac: <code>dsh</code> desktop, <code>grokbot</code>, <code>asc</code> (signed in), <code>stripe</code> (sandbox-blocked), <code>xurl</code> (app token), <code>rea</code>, <code>claude</code>, <code>gh</code> (as oscarlehuu, member of LieuGroup). Leader: see §5. Grok Bot account: 10 bots, one per product; Heardback has routines.</p>
+
+<!-- ===================================================== -->
+<h2>7. Research index (archived — read, don't redo)</h2>
+<table>
+<tr><th>File</th><th>One line</th></tr>
+<tr><td><code>research/dsh-extensibility.md</code></td><td>Plugin vs fork verdict; slots; services; where the layout lives</td></tr>
+<tr><td><code>research/dsh-root-slot-and-providers.md</code></td><td>How to own the whole page (root slot, priority); SubagentProvider contract; wake mechanism</td></tr>
+<tr><td><code>research/dsh-superagent-prototype.md</code></td><td>What DeepSeek's Router/Worker prototype has; which 5 files to lift</td></tr>
+<tr><td><code>research/open-source-landscape.md</code></td><td>13 projects compared; Paperclip, Backlog.md, prototype are the keepers</td></tr>
+<tr><td><code>research/capy.md</code></td><td>How Capy Captains work (crew, AGENTS/CREW/NOTES/DIGEST.md, wake on crew finish)</td></tr>
+<tr><td><code>research/grokbot-and-x.md</code></td><td>grokbot CLI model (routines, inbox, approvals, jobs); Oscar's 10 bots; X status</td></tr>
+<tr><td><code>research/openbot.md</code></td><td>Studied the wrong OpenBot (CopilotKit); correction banner at top</td></tr>
+<tr><td><code>research/claude-cursor.md</code></td><td>Claude Projects vs Cursor Projects</td></tr>
+<tr><td><code>research/business-data.md</code></td><td>App Store Connect: 22 apps, 5 live; FillLight 1.1.5 live Oct 28, $0 last 28 days</td></tr>
+<tr><td><code>research/user-context.md</code></td><td>Oscar's products, stack, how he works, recurring pains</td></tr>
+</table>
+<p>External: <a href="https://x.com/DeepSeekHarness/status/2116857257245987236">DSH super-agent article</a> · <a href="https://github.com/deepseek-ai/dsh-superagent-prototype">prototype</a> · <a href="https://github.com/paperclipai/paperclip">Paperclip</a> · <a href="https://github.com/MrLesk/Backlog.md">Backlog.md</a> · <a href="https://github.com/nightly-labs/openbot">OpenBot</a> · <a href="https://github.com/pingdotgg/t3code">T3 Code</a></p>
 
 </main>
 </body>

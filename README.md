@@ -9,8 +9,10 @@ Working name. By [LieuGroup](https://github.com/LieuGroup). MIT.
 ## Status
 
 Day 0. Research and decisions only; no code yet.
-See [docs/decisions.md](docs/decisions.md) for the founding decisions and
-[docs/research/](docs/research/) for the background research.
+Everything — picture, decisions, plan, kickoff brief, status — is in one
+file: [docs/projectx.html](docs/projectx.html). Background research is in
+[docs/research/](docs/research/). Any agent working here starts from
+[AGENTS.md](AGENTS.md).
 
 ## Ideas in one table
 
