@@ -154,6 +154,7 @@
 <tr><td>16</td><td>Bot lifecycle</td><td>We own it in <code>projectx-host</code> (Thread ↔ job table, send/wait/tail/interrupt). DSH's one-shot subagent slot is for cheap in-house helpers only.</td><td>Grok Bot bots are conversational; DSH's slot is one-shot</td></tr>
 <tr><td>17</td><td>Not continuing</td><td>LilOS / Nuncio</td><td>Built engine + product at once; too slow</td></tr>
 <tr><td>18</td><td>Licence</td><td>MIT, public on GitHub under LieuGroup. Write everything as if already public.</td><td>—</td></tr>
+<tr><td>19</td><td>Remote window before our UI exists</td><td>DSH's own <code>dsh web</code> on the leader behind Tailscale (path <code>/projectx</code>). Not OpenBot, not Hermes. Hermes is a candidate crew bot later (speaks ACP); OpenBot optional.</td><td>It is the same thing we are building; no third-party window, no waitlist</td></tr>
 </table>
 
 <!-- ===================================================== -->
@@ -207,7 +208,7 @@ ProjectX/
 
 <!-- ===================================================== -->
 <h2>5. Kickoff brief — for the agent on the leader</h2>
-<p class="lead">Oscar talks to a DSH agent on <code>oscar-dev-server-leader</code> through OpenBot. That agent reads this section and does the steps. Read-only first; ask before anything that installs, deletes, or costs money.</p>
+<p class="lead">Any agent with a shell on <code>oscar-dev-server-leader</code> (Hermes, OpenBot's "DSH CPA", or a DSH session) reads this section and does the steps. Read-only first; ask before anything that installs, deletes, or costs money. The goal of this section is that Oscar can talk to the Captain in a browser tab on his phone, through DSH's own web mode — not through OpenBot or Hermes.</p>
 
 <div class="q">
 <b>Facts you can rely on (checked 2026-11-04):</b> user <code>oscar</code>; Ubuntu x86_64, 12 cores, 15 GB RAM; Node 22.23; git; <code>dsh 0.2.1-rc.5</code> at <code>/usr/bin/dsh</code> with only the <code>acp</code> profile; <b>no pnpm</b>; OpenBot 0.60 as a systemd service, with one custom ACP agent "DSH CPA" → <code>~/.local/bin/dsh-cpa-acp</code> → <code>dsh --profile acp</code> using provider <code>cliproxyapi-dev-server</code>; Tailscale serve already proxies <code>/</code> → 127.0.0.1:9119 (hermes) — do not change it. Also running: Capy, Hermes, T3, cloudflared, QuickBook360 dev. The Mac is not used for anything.
@@ -218,7 +219,7 @@ ProjectX/
   <li><b>Install pnpm</b> (ask first): <code>npm i -g pnpm</code>. Nothing else global.</li>
   <li><b>Profile.</b> Create <code>~/.dsh/profiles/projectx</code> from the web template: <code>dsh projectx --from-default-profile web --dump-config &gt; /dev/null</code> (same trick dsh-superagent-prototype uses; verify the command with <code>dsh --help</code> first). Copy the <code>cliproxyapi-dev-server</code> model config from the <code>acp</code> profile's patch into it. <b>Never</b> print or commit the API key env value.</li>
   <li><b>Empty bundle.</b> Create <code>packages/projectx-profile</code> with a <code>package.json</code> (<code>dsh.bundle.patch</code>) and a <code>cordis.patch.yml</code> that only sets the Captain's system prompt: "You are the Captain of ProjectX…" (use the words in §3). Model <code>@deepseek-ai/dsh-experimental-agent-team-profile</code>'s layout. Install with <code>dsh plugin --profile projectx add "link:$HOME/src/ProjectX/packages/projectx-profile"</code>.</li>
-  <li><b>OpenBot agent.</b> Add a second custom ACP agent in OpenBot named <b>ProjectX Captain</b>: a copy of <code>dsh-cpa-acp</code> that runs <code>dsh --profile projectx</code> instead of <code>acp</code> (the ACP server comes from dsh-base, so the profile must include it — check <code>dsh --profile projectx --help</code>). Oscar then talks to the Captain from his phone.</li>
+  <li><b>The window.</b> Start DSH's web mode for the profile, in tmux: <code>dsh --profile projectx web --no-open --port 3081 --public-url https://oscar-dev-server-leader.&lt;tailnet&gt;.ts.net/projectx/ --trusted-host oscar-dev-server-leader.&lt;tailnet&gt;.ts.net</code>. Expose it beside hermes: <code>tailscale serve --bg --set-path /projectx http://127.0.0.1:3081</code> (hermes keeps <code>/</code>; do not touch it). Read <code>dsh-web-app/README.md</code> "Listening, trust, and public deployments" if the prefix proxy misbehaves. Oscar then talks to the Captain from any browser, phone included. <i>Optional:</i> also register it in OpenBot as a custom ACP agent (copy of <code>dsh-cpa-acp</code> running <code>dsh --profile projectx</code>) if he wants it there too.</li>
   <li><b>Issues.</b> Create <code>issues/PX-1.md</code> by hand ("Kickoff on the leader", status: done) so the format exists: YAML front-matter <code>key, title, status, owner, product, created, blocked_by</code>, then markdown body with Acceptance criteria. Then build the <code>issue_*</code> tools (build-order step 2) in <code>packages/projectx-host</code>.</li>
   <li><b>Commit often</b>, push to <code>LieuGroup/ProjectX</code>, and update §6 of this file at the end of every session.</li>
 </ol>
@@ -229,7 +230,7 @@ ProjectX/
 
 <h3>2026-11-04 evening — founding sessions on the Mac (DSH desktop)</h3>
 <ul>
-  <li>Done: research (6 + 4 notes under <code>docs/research/</code>), decisions 1–18, this file, repo pushed to <code>LieuGroup/ProjectX</code>.</li>
+  <li>Done: research (6 + 4 notes under <code>docs/research/</code>), decisions 1–19, this file, repo pushed to <code>LieuGroup/ProjectX</code>.</li>
   <li><b>No code yet.</b> Next: §5 Kickoff on the leader, driven from OpenBot.</li>
   <li>The Mac folder <code>~/Desktop/Oscar/ProjectX</code> is now just a clone; the leader is the home. (The <code>Projectx</code>/<code>projectx</code> folders on the Mac are the same folder — case-insensitive filesystem — not leftovers.)</li>
   <li>Founding conversation, if the docs are not enough: DSH desktop session <code>session-d44774f0-ccb3-463c-8d2f-995cd1926069</code> under <code>~/.dsh/sessions/--Users-a1241968-Documents-deepseek-harness-default-workspace--/</code> on the Mac, plus the follow-up session rooted in this folder.</li>
