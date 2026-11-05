@@ -154,7 +154,8 @@
 <tr><td>16</td><td>Bot lifecycle</td><td>We own it in <code>projectx-host</code> (Thread ↔ job table, send/wait/tail/interrupt). DSH's one-shot subagent slot is for cheap in-house helpers only.</td><td>Grok Bot bots are conversational; DSH's slot is one-shot</td></tr>
 <tr><td>17</td><td>Not continuing</td><td>LilOS / Nuncio</td><td>Built engine + product at once; too slow</td></tr>
 <tr><td>18</td><td>Licence</td><td>MIT, public on GitHub under LieuGroup. Write everything as if already public.</td><td>—</td></tr>
-<tr><td>19</td><td>Remote window before our UI exists</td><td>DSH's own <code>dsh web</code> on the leader behind Tailscale (path <code>/projectx</code>). Not OpenBot, not Hermes. Hermes is a candidate crew bot later (speaks ACP); OpenBot optional.</td><td>It is the same thing we are building; no third-party window, no waitlist</td></tr>
+<tr><td>19</td><td>Window before our UI exists</td><td><b>T3 Code</b> on the leader, with the <code>projectx</code> DSH profile as a local ACP command. (Earlier: <code>dsh web</code> behind Tailscale — still the path for our own UI at build step 4.) Not OpenBot, not Hermes.</td><td>T3 is the tool Oscar uses daily; DSH plugins load into the ACP profile the same way</td></tr>
+<tr><td>20</td><td>Hermes</td><td>Stays Oscar's personal assistant on the leader. Candidate crew bot via ACP later. Engine choice (DSH vs Hermes) deliberately left open until ~2 weeks of real use of the Captain in T3.</td><td>Oscar unsure ("FOMO"); decide from experience, not tables. See research/hermes.md</td></tr>
 </table>
 
 <!-- ===================================================== -->
@@ -208,29 +209,42 @@ ProjectX/
 
 <!-- ===================================================== -->
 <h2>5. Kickoff brief — for the agent on the leader</h2>
-<p class="lead">Any agent with a shell on <code>oscar-dev-server-leader</code> (Hermes, OpenBot's "DSH CPA", or a DSH session) reads this section and does the steps. Read-only first; ask before anything that installs, deletes, or costs money. The goal of this section is that Oscar can talk to the Captain in a browser tab on his phone, through DSH's own web mode — not through OpenBot or Hermes.</p>
+<p class="lead">The Captain already exists on <code>oscar-dev-server-leader</code> as a DSH ACP agent; Oscar talks to it in <b>T3 Code</b> (his daily tool), later in our own UI. Any agent with a shell on the leader reads this section and continues. Read-only first; ask before anything that installs, deletes, or costs money.</p>
 
 <div class="q">
-<b>Facts you can rely on (checked 2026-11-04):</b> user <code>oscar</code>; Ubuntu x86_64, 12 cores, 15 GB RAM; Node 22.23; git; <code>dsh 0.2.1-rc.5</code> at <code>/usr/bin/dsh</code> with only the <code>acp</code> profile; <b>no pnpm</b>; OpenBot 0.60 as a systemd service, with one custom ACP agent "DSH CPA" → <code>~/.local/bin/dsh-cpa-acp</code> → <code>dsh --profile acp</code> using provider <code>cliproxyapi-dev-server</code>; Tailscale serve already proxies <code>/</code> → 127.0.0.1:9119 (hermes) — do not change it. Also running: Capy, Hermes, T3, cloudflared, QuickBook360 dev. The Mac is not used for anything.
+<b>What exists (done 2026-11-05 from the Mac over SSH):</b>
+<ul>
+  <li>Repo clone: <code>~/src/ProjectX</code></li>
+  <li>DSH profile <code>~/.dsh/profiles/projectx</code> = <code>dsh-base</code> + <code>dsh-acp-app</code>; its <code>cordis.patch.yml</code> sets the Captain persona and routes the model to <code>cliproxyapi-dev-server / claude-fable-5-1</code>. The key comes from <code>CLIPROXYAPI_DEV_SERVER_API_KEY</code> in the env, via the global <code>~/.dsh/cordis.patch.yml</code> (never copy it anywhere).</li>
+  <li>Wrapper <code>~/.local/bin/projectx-acp</code>: <code>cd ~/src/ProjectX &amp;&amp; exec dsh --profile projectx</code>. Verified with a raw ACP smoke test: initialize → session/new → prompt → the Captain answers in character.</li>
+  <li>Other facts: user <code>oscar</code>; Ubuntu x86_64, 12 cores, 15 GB; Node 22.23; <code>dsh 0.2.1-rc.5</code> at <code>/usr/bin/dsh</code>; <b>no pnpm</b>; T3 Code server (<code>t3 serve</code>, port 3773) already running; Hermes on 9119 behind Tailscale <code>/</code> (don't touch); OpenBot, Capy, cloudflared, QuickBook360 dev also running.</li>
+</ul>
 </div>
 
 <ol>
-  <li><b>Clone.</b> <code>git clone https://github.com/LieuGroup/ProjectX ~/src/ProjectX</code>. Open <code>docs/projectx.html</code> (read it as text; it's the memory). Confirm the DSH version satisfies what we'll pin later.</li>
+  <li><b>Oscar, in T3 Code:</b> Settings → Providers → Add provider → Show more → <b>Local ACP command</b>. Executable: <code>/home/oscar/.local/bin/projectx-acp</code>, no arguments, display name <b>ProjectX Captain</b>. Open a thread on <code>~/src/ProjectX</code> and say hello. (T3's own doc: <a href="https://github.com/pingdotgg/t3code/blob/main/docs/user/providers-acp.md">providers-acp.md</a>.)</li>
   <li><b>Install pnpm</b> (ask first): <code>npm i -g pnpm</code>. Nothing else global.</li>
-  <li><b>Profile.</b> Create <code>~/.dsh/profiles/projectx</code> from the web template: <code>dsh projectx --from-default-profile web --dump-config &gt; /dev/null</code> (same trick dsh-superagent-prototype uses; verify the command with <code>dsh --help</code> first). Copy the <code>cliproxyapi-dev-server</code> model config from the <code>acp</code> profile's patch into it. <b>Never</b> print or commit the API key env value.</li>
-  <li><b>Empty bundle.</b> Create <code>packages/projectx-profile</code> with a <code>package.json</code> (<code>dsh.bundle.patch</code>) and a <code>cordis.patch.yml</code> that only sets the Captain's system prompt: "You are the Captain of ProjectX…" (use the words in §3). Model <code>@deepseek-ai/dsh-experimental-agent-team-profile</code>'s layout. Install with <code>dsh plugin --profile projectx add "link:$HOME/src/ProjectX/packages/projectx-profile"</code>.</li>
-  <li><b>The window.</b> Start DSH's web mode for the profile, in tmux: <code>dsh --profile projectx web --no-open --port 3081 --public-url https://oscar-dev-server-leader.&lt;tailnet&gt;.ts.net/projectx/ --trusted-host oscar-dev-server-leader.&lt;tailnet&gt;.ts.net</code>. Expose it beside hermes: <code>tailscale serve --bg --set-path /projectx http://127.0.0.1:3081</code> (hermes keeps <code>/</code>; do not touch it). Read <code>dsh-web-app/README.md</code> "Listening, trust, and public deployments" if the prefix proxy misbehaves. Oscar then talks to the Captain from any browser, phone included. <i>Optional:</i> also register it in OpenBot as a custom ACP agent (copy of <code>dsh-cpa-acp</code> running <code>dsh --profile projectx</code>) if he wants it there too.</li>
-  <li><b>Issues.</b> Create <code>issues/PX-1.md</code> by hand ("Kickoff on the leader", status: done) so the format exists: YAML front-matter <code>key, title, status, owner, product, created, blocked_by</code>, then markdown body with Acceptance criteria. Then build the <code>issue_*</code> tools (build-order step 2) in <code>packages/projectx-host</code>.</li>
-  <li><b>Commit often</b>, push to <code>LieuGroup/ProjectX</code>, and update §6 of this file at the end of every session.</li>
+  <li><b>Empty bundle.</b> Create <code>packages/projectx-profile</code> with a <code>package.json</code> (<code>dsh.bundle.patch</code>) and a <code>cordis.patch.yml</code>; move the persona there from the profile patch. Model it on <code>@deepseek-ai/dsh-experimental-agent-team-profile</code>. Install with <code>dsh plugin --profile projectx add "link:$HOME/src/ProjectX/packages/projectx-profile"</code>. Re-run the smoke test (<code>/tmp/acp-smoke.py</code> pattern) after every change to the profile.</li>
+  <li><b>Issues.</b> Create <code>issues/PX-1.md</code> by hand ("Captain reachable from T3", status: done) so the format exists: YAML front-matter <code>key, title, status, owner, product, created, blocked_by</code>, then a markdown body with Acceptance criteria. Then build the <code>issue_*</code> tools in <code>packages/projectx-host</code> (build-order step 2) and add the host package to the bundle.</li>
+  <li><b>Our UI (later, build-order step 4).</b> Add <code>dsh-web-app</code> to the profile bundles, run <code>dsh --profile projectx web --no-open --port 3081 --public-url https://oscar-dev-server-leader.&lt;tailnet&gt;.ts.net/projectx/ --trusted-host …</code>, expose with <code>tailscale serve --bg --set-path /projectx http://127.0.0.1:3081</code>. Until then T3 is the window.</li>
+  <li><b>Commit often</b>, push to <code>LieuGroup/ProjectX</code>, and update §6 at the end of every session.</li>
 </ol>
 
 <!-- ===================================================== -->
 <h2>6. Status / handoff</h2>
 <p class="lead">Update at the end of every session. Newest first.</p>
 
+<h3>2026-11-05 — Captain is alive on the leader (from the Mac over SSH)</h3>
+<ul>
+  <li>Verified: DSH's desktop app is only a window; the engine is <code>dsh --profile &lt;name&gt;</code> and plugins load into every profile, including <code>acp</code>. T3 Code documents DSH as a local ACP command. → <b>T3 Code is the window until our UI exists</b> (decision 19 amended).</li>
+  <li>Created profile <code>projectx</code> (base + acp-app, Captain persona, cliproxy model), wrapper <code>~/.local/bin/projectx-acp</code>, cloned repo to <code>~/src/ProjectX</code>. Raw ACP smoke test passes: the Captain introduces itself correctly.</li>
+  <li>Research added: <code>research/hermes.md</code>. Hermes is a real engine candidate (MIT, kanban, cron, delegation, gateways, mobile beta). Oscar: LilOS is "no longer my interest"; prefers Hermes as engine by feeling ("I think I FOMO"); still wants his own factory. <b>Engine not re-decided</b> — plan: use DSH for real via T3 for ~2 weeks and decide from experience.</li>
+  <li>Next: Oscar adds the ACP provider in T3 (§5 step 1), then §5 steps 2–4.</li>
+</ul>
+
 <h3>2026-11-04 evening — founding sessions on the Mac (DSH desktop)</h3>
 <ul>
-  <li>Done: research (6 + 4 notes under <code>docs/research/</code>), decisions 1–19, this file, repo pushed to <code>LieuGroup/ProjectX</code>.</li>
+  <li>Done: research (6 + 4 notes under <code>docs/research/</code>), decisions 1–20, this file, repo pushed to <code>LieuGroup/ProjectX</code>.</li>
   <li><b>No code yet.</b> Next: §5 Kickoff on the leader, driven from OpenBot.</li>
   <li>The Mac folder <code>~/Desktop/Oscar/ProjectX</code> is now just a clone; the leader is the home. (The <code>Projectx</code>/<code>projectx</code> folders on the Mac are the same folder — case-insensitive filesystem — not leftovers.)</li>
   <li>Founding conversation, if the docs are not enough: DSH desktop session <code>session-d44774f0-ccb3-463c-8d2f-995cd1926069</code> under <code>~/.dsh/sessions/--Users-a1241968-Documents-deepseek-harness-default-workspace--/</code> on the Mac, plus the follow-up session rooted in this folder.</li>
@@ -258,6 +272,7 @@ ProjectX/
 <tr><td><code>research/capy.md</code></td><td>How Capy Captains work (crew, AGENTS/CREW/NOTES/DIGEST.md, wake on crew finish)</td></tr>
 <tr><td><code>research/grokbot-and-x.md</code></td><td>grokbot CLI model (routines, inbox, approvals, jobs); Oscar's 10 bots; X status</td></tr>
 <tr><td><code>research/openbot.md</code></td><td>Studied the wrong OpenBot (CopilotKit); correction banner at top</td></tr>
+<tr><td><code>research/hermes.md</code></td><td>Hermes Agent: shape, interfaces, orchestration, vs DSH; verdict crew-bot-via-ACP</td></tr>
 <tr><td><code>research/claude-cursor.md</code></td><td>Claude Projects vs Cursor Projects</td></tr>
 <tr><td><code>research/business-data.md</code></td><td>App Store Connect: 22 apps, 5 live; FillLight 1.1.5 live Oct 28, $0 last 28 days</td></tr>
 <tr><td><code>research/user-context.md</code></td><td>Oscar's products, stack, how he works, recurring pains</td></tr>
